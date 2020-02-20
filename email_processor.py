@@ -4,6 +4,7 @@ import sender
 import reader
 import time
 
+DB_PATH = 'db.sqlite'
 
 logging.basicConfig(
      filename='logs/engine.log',
@@ -13,7 +14,7 @@ logging.basicConfig(
 )
 
 
-_connection = sqlite3.connect('db.sqlite')
+_connection = sqlite3.connect(DB_PATH)
 
 
 def _dict_factory(cursor, row):
@@ -81,7 +82,7 @@ def schedule(
         spreadsheet_link,
         delay=5,
 ):
-    connection = sqlite3.connect('db.sqlite')
+    connection = sqlite3.connect(DB_PATH)
     cursor = connection.cursor()
     data = reader.get_default_values_from_spreadsheet(_get_spreadsheet_id(spreadsheet_link))
     current_time = int(time.time())
@@ -116,5 +117,11 @@ def _get_spreadsheet_id(spreadsheet_link):
             found = True
     return ''
 
-schedule('good token', 'login', 'pass', 'server', 'https://docs.google.com/spreadsheets/d/1DN_cpfs9b1w5DTVcm2NZ_MHxUOfrUQ4LwGui8JzhTFY/edit?usp=sharing')
-poll()
+
+def get_progress(login):
+    connection = sqlite3.connect(DB_PATH)
+    cursor = connection.cursor()
+    cursor.execute('SELECT COUNT(login) FROM queue WHERE login=?', [login])
+    count = cursor.fetchall()[0][0]
+    connection.close()
+    return count
