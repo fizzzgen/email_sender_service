@@ -6,12 +6,12 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
-logging.basicConfig(
-     filename='logs/engine.log',
-     level=logging.INFO,
-     format= '[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s',
-     datefmt='%H:%M:%S'
-)
+#logging.basicConfig(
+#     filename='logs/engine.log',
+#     level=logging.INFO,
+#     format= '[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s',
+#     datefmt='%H:%M:%S'
+#)
 
 
 def _parse_google_table(spreadsheetId, spreadsheetRange):

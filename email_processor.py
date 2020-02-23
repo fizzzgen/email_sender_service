@@ -3,14 +3,15 @@ import sqlite3
 import sender
 import reader
 import time
+import threading
 
 DB_PATH = 'db.sqlite'
 
 logging.basicConfig(
-     filename='logs/engine.log',
-     level=logging.INFO,
-     format= '[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s',
-     datefmt='%H:%M:%S'
+    filename='logs/engine.log',
+    level=logging.INFO,
+    format='[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s',
+    datefmt='%H:%M:%S'
 )
 
 
@@ -57,17 +58,25 @@ def poll():
         _cursor.execute('SELECT id,token,to_addr,html_text,subject,unsubscribe_link,image_file,login,password,server,ts FROM queue WHERE ts<{}'.format(current_time))
         emails = _cursor.fetchall()
         logging.info('[poll] Emails to send: {}'.format(len(emails)))
+        threads = []
         for email in emails:
-            res = sender.send_email(
-                login=email['login'],
-                password=email['password'],
-                server=email['server'],
-                to_addr=email['to_addr'],
-                html_text= _decode(email['html_text']),
-                subject= _decode(email['subject']),
-                unsubscribe_link=email['unsubscribe_link'],
+            tr = threading.Thread(
+                target=sender.send_email,
+                kwargs={
+                    'login': email['login'],
+                    'password': email['password'],
+                    'server': email['server'],
+                    'to_addr': email['to_addr'],
+                    'html_text': _decode(email['html_text']),
+                    'subject': _decode(email['subject']),
+                    'unsubscribe_link': email['unsubscribe_link'],
+                    'testing': False,
+                }
             )
-            logging.info('[poll] sending status: {}'.format('OK' if res else 'FAIL'))
+            tr.run()
+            threads.append(tr)
+        while(threading.alive_count()):
+            time.sleep(0.5)
         for email in emails:
             _cursor.execute('DELETE FROM queue WHERE id={}'.format(email['id']))
         _connection.commit()
