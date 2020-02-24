@@ -1,13 +1,15 @@
-import time
 import logging
 
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from email.mime.application import MIMEApplication
+from email.mime.application import MIMEApplication # noqa
 from email.mime.image import MIMEImage
 
 _IMG_HTML_NAME = '<image1>'
+
+fail_log = '[send_email] Fail: message from {} to {} not sent... Retrying: {}'
+fail_log2 = '[send_email] Fail: message from {} to {} not sent... End retrying'
 
 
 def send_email(
@@ -59,11 +61,16 @@ def send_email(
                 server.sendmail(login, to_addr, msg.as_string())
 
             server.quit()
-            logging.info('[send_email] Success: message from {} to {} sent'.format(login, to_addr))
+            logging.info(
+                '[send_email] Success: message from {} to {} sent'.format(
+                    login,
+                    to_addr
+                )
+            )
             return True
 
         except Exception as ex:
-            logging.warning('[send_email] Fail: message from {} to {} not sent... Retrying: {}'.format(login, to_addr, ex))
+            logging.warning(fail_log.format(login, to_addr, ex))
 
-    logging.warning('[send_email] Fail: message from {} to {} not sent... End retrying'.format(login, to_addr))
+    logging.warning(fail_log2.format(login, to_addr))
     return False

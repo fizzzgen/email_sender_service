@@ -7,13 +7,6 @@ import threading
 
 DB_PATH = 'db.sqlite'
 
-logging.basicConfig(
-    filename='logs/engine.log',
-    level=logging.INFO,
-    format='[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s',
-    datefmt='%H:%M:%S'
-)
-
 
 _connection = sqlite3.connect(DB_PATH)
 
@@ -24,9 +17,9 @@ def _dict_factory(cursor, row):
         d[col[0]] = row[idx]
     return d
 
+
 _connection.row_factory = _dict_factory
 _cursor = _connection.cursor()
-
 
 
 _encode_str = {
@@ -35,8 +28,8 @@ _encode_str = {
 }
 
 _decode_str = {
-    "SINGLE_QUOTE" : "'",
-    "DOUBLE_QUOTE" : '"',
+    "SINGLE_QUOTE": "'",
+    "DOUBLE_QUOTE": '"',
 }
 
 
@@ -55,7 +48,7 @@ def _decode(s):
 def poll():
     while True:
         current_time = int(time.time())
-        _cursor.execute('SELECT id,token,to_addr,html_text,subject,unsubscribe_link,image_file,login,password,server,ts FROM queue WHERE ts<{}'.format(current_time))
+        _cursor.execute('SELECT id,token,to_addr,html_text,subject,unsubscribe_link,image_file,login,password,server,ts FROM queue WHERE ts<{}'.format(current_time))  # noqa
         emails = _cursor.fetchall()
         logging.info('[poll] Emails to send: {}'.format(len(emails)))
         threads = []
@@ -75,12 +68,16 @@ def poll():
             )
             tr.run()
             threads.append(tr)
-        while(threading.alive_count()):
-            time.sleep(0.5)
+        while threads:
+            for tr in threads:
+                if not tr.isAlive():
+                    threads.remove(tr)
         for email in emails:
-            _cursor.execute('DELETE FROM queue WHERE id={}'.format(email['id']))
+            _cursor.execute(
+                'DELETE FROM queue WHERE id={}'.format(email['id'])
+            )
         _connection.commit()
-        time.sleep(10)
+        time.sleep(0.1)
 
 
 def schedule(
@@ -93,14 +90,16 @@ def schedule(
 ):
     connection = sqlite3.connect(DB_PATH)
     cursor = connection.cursor()
-    data = reader.get_default_values_from_spreadsheet(_get_spreadsheet_id(spreadsheet_link))
+    data = reader.get_default_values_from_spreadsheet(
+        _get_spreadsheet_id(spreadsheet_link)
+    )
     current_time = int(time.time())
     for item in data:
         cursor.execute(
             '''
                 INSERT INTO queue(login, password, server, to_addr, html_text, subject, unsubscribe_link, ts, token)
                 VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ''',
+            ''',  # noqa
             [
                 login,
                 password,

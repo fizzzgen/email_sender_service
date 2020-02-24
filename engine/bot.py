@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import logging
 import telebot
 import email_processor
@@ -53,13 +55,20 @@ def set_config(message):
             server,
             spreadsheet_link
         )
-    except:
+    except Exception as ex:
         logging.exception(
             'Wrong config: {}'.format(message.text)
         )
+        logging.exception(ex)
         bot.send_message(message.chat.id, WRONG_CONFIG)
         bot.send_message(message.chat.id, HELP_TEXT)
 
 
-bot.polling(none_stop=True)
-
+def poll():
+    import threading
+    tr = threading.Thread(
+        target=bot.polling,
+        kwargs={'none_stop': True},
+    )
+    tr.start()
+    return tr

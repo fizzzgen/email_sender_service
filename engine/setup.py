@@ -1,14 +1,6 @@
 import sqlite3
 import logging
 
-
-logging.basicConfig(
-     filename='logs/engine.log',
-     level=logging.INFO,
-     format= '[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s',
-     datefmt='%H:%M:%S'
- )
-
 connection = sqlite3.connect('db.sqlite')
 cursor = connection.cursor()
 
