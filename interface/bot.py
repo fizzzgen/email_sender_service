@@ -2,7 +2,7 @@
 
 import logging
 import telebot
-import email_processor
+from engine import email_processor
 
 
 TOKEN = '804994694:AAHPzpZMvWVMbjaIrkofTKh3PXbO4gFmkhQ'

@@ -13,3 +13,5 @@ rm reader/*.pyc
 rm reader/*.sqlite
 rm sender/*.pyc
 rm sender/*.sqlite
+rm interface/*.pyc
+rm interface/*.sqlite
