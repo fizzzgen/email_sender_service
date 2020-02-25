@@ -11,4 +11,5 @@ rm engine/*.pyc
 rm engine/*.sqlite
 rm reader/*.pyc
 rm reader/*.sqlite
-
+rm sender/*.pyc
+rm sender/*.sqlite
