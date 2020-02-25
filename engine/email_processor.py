@@ -1,7 +1,7 @@
 import logging
 import sqlite3
 import sender
-import reader
+from reader import reader
 import time
 import threading
 
