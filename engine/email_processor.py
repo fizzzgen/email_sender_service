@@ -1,9 +1,9 @@
 import logging
 import sqlite3
-from sender import sender
-from reader import reader
 import time
 import threading
+from sender import sender
+from reader import reader
 
 DB_PATH = 'db.sqlite'
 
