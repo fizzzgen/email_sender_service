@@ -37,7 +37,7 @@ class TestSchedulingTestCase(unittest.TestCase):
             return dict_values
 
         self.patch_0 = mock.patch(
-            'engine.reader.get_default_values_from_spreadsheet',
+            'reader.reader.get_default_values_from_spreadsheet',
             get_default_values_from_spreadsheet
         )
         self.patch_1 = mock.patch(
