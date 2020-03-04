@@ -1,2 +1,1 @@
-import setup  # noqa
-import email_processor  # noqa
+from . import setup  # noqa

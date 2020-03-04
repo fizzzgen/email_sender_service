@@ -1,4 +1,4 @@
-import engine
+from engine import email_processor
 
 
-engine.email_processor.poll()
+email_processor.poll()
