@@ -1,16 +1,17 @@
 from flask import Flask
 from engine import email_processor
 from flask import request
+from flask import render_template
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="static")
 
 
 @app.route('/')
 def ping():
-    return 'Working...'
+    return render_template('form.html')
 
 
-@app.route('/schedule/')
+@app.route('/schedule/', methods=['POST'])
 def schedule():
     if request.method == 'POST':
         data = request.form
@@ -27,3 +28,4 @@ def schedule():
             server,
             spreadsheet_link
         )
+        return "Success!"

@@ -10,8 +10,8 @@ from google.auth.transport.requests import Request
 def _parse_google_table(spreadsheetId, spreadsheetRange):
     logging.info('[reader] Parsing spreadsheet {}'.format(spreadsheetId))
     creds = None
-    if os.path.exists('token.pickle'):
-        with open('token.pickle', 'rb') as token:
+    if os.path.exists('reader/token.pickle'):
+        with open('reader/token.pickle', 'rb') as token:
             creds = pickle.load(token)
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
@@ -19,12 +19,12 @@ def _parse_google_table(spreadsheetId, spreadsheetRange):
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json',
+                'reader/credentials.json',
                 ['https://www.googleapis.com/auth/spreadsheets.readonly']
             )
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
-        with open('token.pickle', 'wb') as token:
+        with open('reader/token.pickle', 'wb') as token:
             pickle.dump(creds, token)
 
     service = build('sheets', 'v4', credentials=creds)

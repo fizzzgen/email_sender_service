@@ -1,10 +1,12 @@
-import logging
 import sqlite3
 import time
 import threading
+import socket
 from sender import sender
 from reader import reader
 
+
+socket.setdefaulttimeout(2)
 DB_PATH = 'db.sqlite'
 
 
@@ -50,7 +52,7 @@ def poll():
         current_time = int(time.time())
         _cursor.execute('SELECT id,token,to_addr,html_text,subject,unsubscribe_link,image_file,login,password,server,ts FROM queue WHERE ts<{}'.format(current_time))  # noqa
         emails = _cursor.fetchall()
-        logging.info('[poll] Emails to send: {}'.format(len(emails)))
+        print('[poll] Emails to send: {}'.format(len(emails)))
         threads = []
         for email in emails:
             tr = threading.Thread(
@@ -66,12 +68,13 @@ def poll():
                     'testing': False,
                 }
             )
-            tr.run()
+            tr.start()
             threads.append(tr)
         while threads:
             for tr in threads:
                 if not tr.isAlive():
                     threads.remove(tr)
+
         for email in emails:
             _cursor.execute(
                 'DELETE FROM queue WHERE id={}'.format(email['id'])
