@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Email processor</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='view.css') }}" media="all">
+<script type="text/javascript" src="view.js"></script>
+
+</head>
+<body id="main_body" >
+	
+	<img id="top" src="top.png" alt="">
+	<div id="form_container">
+	
+		<h1><a>Email processor</a></h1>
+		<form id="form_101257" class="appnitro"  method="post" action="http://127.0.0.1:5000/progress">
+					<div class="form_description">
+			<h2>EMAIL PROCESSOR</h2>
+			<p>{% if status %}{{ status }}{% else %}Email processor status{% endif %}
+</p>
+		</div>						
+			<ul >
+			
+					<li id="li_1" >
+		<label class="description" for="element_1">Token </label>
+		<div>
+			<input id="element_1" name="token" class="element text large" type="text" maxlength="255" value=""/> 
+		</div> 
+		</li>
+			
+				<li class="buttons">
+			    <input type="hidden" name="form_id" value="101257" />
+			    
+				<input id="saveForm" class="button_text" type="submit" name="submit" value="Get progress" />
+		</li>
+			</ul>
+		</form>
+		<br>| login || to address || status |<br/>
+		<table style="width:100%" border="2", cellspacing="0">
+			<tr><td>login</td><td>to address</td><td>status</td></tr>
+			    {% for row in progress %}
+                <tr>
+                    {% for item in row %}
+                    <td>{{ item }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+        </table>
+		<div id="footer">
+			FIZZZGEN DEVELOPMENT
+		</div>
+	</div>
+	<img id="bottom" src="bottom.png" alt="">
+	</body>
+</html>

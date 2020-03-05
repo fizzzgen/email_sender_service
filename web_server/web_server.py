@@ -2,6 +2,9 @@ from flask import Flask
 from engine import email_processor
 from flask import request
 from flask import render_template
+import sqlite3
+import logging
+
 
 app = Flask(__name__, template_folder="static")
 
@@ -14,18 +17,43 @@ def ping():
 @app.route('/schedule/', methods=['POST'])
 def schedule():
     if request.method == 'POST':
-        data = request.form
-        token = data['token']
-        login = data['login']
-        password = data['password']
-        server = data['server']
-        spreadsheet_link = data['spreadsheet_link']
+        try:
+            data = request.form
+            token = data['token']
+            login = data['login']
+            password = data['password']
+            server = data['server']
+            spreadsheet_link = data['spreadsheet_link']
 
-        email_processor.schedule(
-            token,
-            login,
-            password,
-            server,
-            spreadsheet_link
-        )
-        return "Success!"
+            email_processor.schedule(
+                token,
+                login,
+                password,
+                server,
+                spreadsheet_link
+            )
+        except Exception as ex:
+            logging.exception(ex)
+            return render_template('form.html', status='EXCEPTION')
+        return render_template('form.html', status='SUCCESS')
+
+
+@app.route('/progress/', methods=['POST', 'GET'])
+def progress():
+    if request.method == 'POST':
+        try:
+            data = request.form
+            token = data['token']
+            conn = sqlite3.connect('db.sqlite')
+            cur = conn.cursor()
+            cur.execute(
+                "SELECT login, to_addr FROM queue WHERE token=?", (token,)
+            )
+            data = cur.fetchall()
+
+        except Exception as ex:
+            logging.exception(ex)
+            return render_template('progress.html', status=repr(ex))
+        return render_template('progress.html', progress=data)
+    if request.method == 'GET':
+        return render_template('progress.html')
