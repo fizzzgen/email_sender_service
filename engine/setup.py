@@ -20,7 +20,9 @@ try:
         login TEXT,
         password TEXT,
         server TEXT,
-        ts INTEGER)
+        ts INTEGER,
+        status TEXT
+        )
         '''
     )
 except Exception as e:

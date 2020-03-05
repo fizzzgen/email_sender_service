@@ -50,7 +50,7 @@ def _decode(s):
 def poll():
     while True:
         current_time = int(time.time())
-        _cursor.execute('SELECT id,token,to_addr,html_text,subject,unsubscribe_link,image_file,login,password,server,ts FROM queue WHERE ts<{}'.format(current_time))  # noqa
+        _cursor.execute('SELECT id,token,to_addr,html_text,subject,unsubscribe_link,image_file,login,password,server,ts FROM queue WHERE ts<{} and status="IN PROGRESS"'.format(current_time))  # noqa
         emails = _cursor.fetchall()
         print('[poll] Emails to send: {}'.format(len(emails)))
         threads = []
@@ -66,6 +66,7 @@ def poll():
                     'subject': _decode(email['subject']),
                     'unsubscribe_link': email['unsubscribe_link'],
                     'testing': False,
+                    'email_id': email['id'],
                 }
             )
             tr.start()
@@ -75,10 +76,12 @@ def poll():
                 if not tr.isAlive():
                     threads.remove(tr)
 
-        for email in emails:
-            _cursor.execute(
-                'DELETE FROM queue WHERE id={}'.format(email['id'])
-            )
+        #for email in emails:
+        #    _cursor.execute(
+        #        'UPDATE queue SET status="SENT" WHERE id={}'.format(
+        #            email['id']
+        #        )
+        #    )
         _connection.commit()
         time.sleep(0.1)
 
@@ -100,8 +103,8 @@ def schedule(
     for item in data:
         cursor.execute(
             '''
-                INSERT INTO queue(login, password, server, to_addr, html_text, subject, unsubscribe_link, ts, token)
-                VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO queue(login, password, server, to_addr, html_text, subject, unsubscribe_link, ts, token, status)
+                VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''',  # noqa
             [
                 login,
@@ -112,7 +115,8 @@ def schedule(
                 _encode(item['subject']),
                 item['unsubscribe_link'],
                 current_time,
-                token
+                token,
+                'IN PROGRESS'
             ]
         )
         current_time += delay

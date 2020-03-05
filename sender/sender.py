@@ -1,5 +1,5 @@
 import logging
-
+import sqlite3
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -20,16 +20,19 @@ def send_email(
         html_text,
         subject,
         unsubscribe_link,
-        retry_nums=2,
+        retry_nums=1,
         retry_interval=5,
         image_path=None,
-        testing=True
+        testing=True,
+        email_id=1,
 ):
 
     # Retrying to send message if not success
     for i in range(retry_nums):
+        conn = sqlite3.connect('db.sqlite')
+        cur = conn.cursor()
         try:
-            server = smtplib.SMTP_SSL(server)
+            server = smtplib.SMTP_SSL(server, 465)
             server.login(login, password)
             server.auth_plain()
 
@@ -67,10 +70,22 @@ def send_email(
                     to_addr
                 )
             )
+            cur.execute('UPDATE queue SET status="SENT" where id=?', (email_id,))
+            conn.commit()
+            conn.close()
             return True
 
         except Exception as ex:
             logging.warning(fail_log.format(login, to_addr, ex))
-
+            exception = "EXCEPTION"
+            if 'password' in repr(ex) or 'Password' in repr(ex):
+                exception = "WRONG LOGIN OR PASSWORD"
+            elif 'spam' in repr(ex) or 'Spam' in repr(ex):
+                exception = "SPAM"
+            else:
+                exception = "BAD SMTP SERVER"
+            cur.execute('UPDATE queue SET status=? where id=?', (exception, email_id,))
+    conn.commit()
+    conn.close()
     logging.warning(fail_log2.format(login, to_addr))
     return False

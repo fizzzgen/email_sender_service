@@ -1,4 +1,5 @@
 from flask import Flask
+from datetime import datetime
 from engine import email_processor
 from flask import request
 from flask import render_template
@@ -47,9 +48,12 @@ def progress():
             conn = sqlite3.connect('db.sqlite')
             cur = conn.cursor()
             cur.execute(
-                "SELECT login, to_addr FROM queue WHERE token=?", (token,)
+                "SELECT login, to_addr, status, ts FROM queue WHERE token=? ORDER BY ts", (token,)
             )
-            data = cur.fetchall()
+            data = [ 
+                [row[0], row[1], row[2], datetime.utcfromtimestamp(row[3]).strftime('%Y-%m-%d %H:%M:%S') ]
+                for row in cur.fetchall()
+            ]
 
         except Exception as ex:
             logging.exception(ex)
