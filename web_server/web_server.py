@@ -61,3 +61,7 @@ def progress():
         return render_template('progress.html', progress=data)
     if request.method == 'GET':
         return render_template('progress.html')
+
+
+def run():
+    app.run(host='0.0.0.0')
