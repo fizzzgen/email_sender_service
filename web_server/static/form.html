@@ -13,11 +13,11 @@
 	<div id="form_container">
 	
 		<h1><a>Email processor</a></h1>
-		<form id="form_101256" class="appnitro"  method="post" action="http://127.0.0.1:5000/schedule">
+		<form id="form_101256" class="appnitro"  method="post" action="/schedule/">
 					<div class="form_description">
-			<h2>{% if status %}{{ status }}{% else %}Email processor{% endif %}</h2>
-			<p>Send emails
-</p>
+			<h2>Email processor</h2>
+			<p>{% if status %}{{ status }}{% else %}by fizzzgen development{% endif %}</p>
+		<p><a href="/progress/">your emails progress</a></p>
 		</div>						
 			<ul >
 			
