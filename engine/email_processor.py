@@ -76,12 +76,6 @@ def poll():
                 if not tr.isAlive():
                     threads.remove(tr)
 
-        #for email in emails:
-        #    _cursor.execute(
-        #        'UPDATE queue SET status="SENT" WHERE id={}'.format(
-        #            email['id']
-        #        )
-        #    )
         _connection.commit()
         time.sleep(0.1)
 

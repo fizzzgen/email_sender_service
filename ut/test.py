@@ -3,6 +3,7 @@ import mock
 import engine
 import multiprocessing
 import time
+import sqlite3
 
 
 class TestSchedulingTestCase(unittest.TestCase):
@@ -19,6 +20,14 @@ class TestSchedulingTestCase(unittest.TestCase):
             f.write('TEST\n')
 
         def log_output(*args, **kwargs):
+            conn = sqlite3.connect('db.sqlite')
+            cur = conn.cursor()
+            cur.execute(
+                'UPDATE queue SET status="SENT" where id=?',
+                (kwargs['email_id'], )
+            )
+            conn.commit()
+            conn.close()
             string = str((args, kwargs))
             with open(filename, 'a') as f:
                 f.write(string + '\n')
@@ -57,6 +66,7 @@ class TestSchedulingTestCase(unittest.TestCase):
                     'smtp.yandex.ru:465',
                     '/d/1DN_cpfs9b1w5DTVcm2NZ_MHxUOfrUQ4LwGui8JzhTFY/edit',
                 )
+                time.sleep(5)
                 engine.email_processor.schedule(
                     'KIRILL',
                     'new-year@simple-digital.ru',

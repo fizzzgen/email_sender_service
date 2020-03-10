@@ -70,7 +70,9 @@ def send_email(
                     to_addr
                 )
             )
-            cur.execute('UPDATE queue SET status="SENT" where id=?', (email_id,))
+            cur.execute(
+                'UPDATE queue SET status="SENT" where id=?', (email_id,)
+            )
             conn.commit()
             conn.close()
             return True
@@ -84,7 +86,10 @@ def send_email(
                 exception = "SPAM"
             else:
                 exception = "BAD SMTP SERVER"
-            cur.execute('UPDATE queue SET status=? where id=?', (exception, email_id,))
+            cur.execute(
+                'UPDATE queue SET status=? where id=?',
+                (exception, email_id,)
+            )
     conn.commit()
     conn.close()
     logging.warning(fail_log2.format(login, to_addr))
