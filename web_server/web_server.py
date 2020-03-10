@@ -48,10 +48,17 @@ def progress():
             conn = sqlite3.connect('db.sqlite')
             cur = conn.cursor()
             cur.execute(
-                "SELECT login, to_addr, status, ts FROM queue WHERE token=? ORDER BY ts", (token,)
+                "SELECT login, to_addr, status, ts FROM queue WHERE token=? ORDER BY ts", (token,)  # noqa
             )
-            data = [ 
-                [row[0], row[1], row[2], datetime.utcfromtimestamp(row[3]).strftime('%Y-%m-%d %H:%M:%S') ]
+            data = [
+                [
+                    row[0],
+                    row[1],
+                    row[2],
+                    datetime.utcfromtimestamp(row[3]).strftime(
+                        '%Y-%m-%d %H:%M:%S'
+                    )
+                ]
                 for row in cur.fetchall()
             ]
 
@@ -64,4 +71,4 @@ def progress():
 
 
 def run():
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', port=80)
