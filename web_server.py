@@ -1,6 +1,7 @@
 from web_server import web_server
-import logging
-logging.basicConfig(filename='logs/web_server.log', force=True)
+import time
+
+time.sleep(2)
 
 
 web_server.run()

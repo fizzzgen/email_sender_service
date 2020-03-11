@@ -6,7 +6,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication # noqa
 from email.mime.image import MIMEImage
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('root')
 
 _IMG_HTML_NAME = '<image1>'
 

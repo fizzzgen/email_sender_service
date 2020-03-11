@@ -6,7 +6,7 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('root')
 
 
 def _parse_google_table(spreadsheetId, spreadsheetRange):

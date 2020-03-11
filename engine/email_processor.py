@@ -7,7 +7,7 @@ import logging
 from sender import sender
 from reader import reader
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('root')
 
 socket.setdefaulttimeout(2)
 DB_PATH = 'db.sqlite'

@@ -6,7 +6,7 @@ from flask import render_template
 import sqlite3
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('root')
 
 
 app = Flask(__name__, template_folder="static")
