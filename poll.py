@@ -8,4 +8,8 @@ formatter = logging.Formatter('%(asctime)s : %(levelname)s : %(name)s : %(messag
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
-email_processor.poll()
+while True:
+    try:
+        email_processor.poll()
+    except Exception as ex:
+        logger.exception("CRIT IN ENGINE: {}".format(ex))

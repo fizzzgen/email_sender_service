@@ -22,7 +22,7 @@ def send_email(
         html_text,
         subject,
         unsubscribe_link,
-        retry_nums=2,
+        retry_nums=1,
         retry_interval=5,
         image_path=None,
         testing=True,
@@ -81,7 +81,7 @@ def send_email(
             return True
 
         except Exception as ex:
-            logger.warning(fail_log.format(login, to_addr, ex, email_id))
+            logger.warning(fail_log.format(login, to_addr, email_id, ex,))
             exception = "EXCEPTION"
             if 'password' in repr(ex) or 'Password' in repr(ex):
                 exception = "WRONG LOGIN OR PASSWORD"
@@ -93,6 +93,8 @@ def send_email(
                 'UPDATE queue SET status=? where id=?',
                 (exception, email_id,)
             )
+            conn.commit()
+            conn.close()
     conn.commit()
     conn.close()
     logger.warning(fail_log2.format(login, to_addr, email_id))
