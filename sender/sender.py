@@ -6,10 +6,12 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication # noqa
 from email.mime.image import MIMEImage
 
+logger = logging.getLogger(__name__)
+
 _IMG_HTML_NAME = '<image1>'
 
-fail_log = '[send_email] Fail: message from {} to {} not sent... Retrying: {}'
-fail_log2 = '[send_email] Fail: message from {} to {} not sent... End retrying'
+fail_log = '[send_email] Fail: message from {} to {} id {} not sent... Retrying: {}'
+fail_log2 = '[send_email] Fail: message from {} to {} id {} not sent... End retrying'
 
 
 def send_email(
@@ -20,7 +22,7 @@ def send_email(
         html_text,
         subject,
         unsubscribe_link,
-        retry_nums=1,
+        retry_nums=2,
         retry_interval=5,
         image_path=None,
         testing=True,
@@ -64,10 +66,11 @@ def send_email(
                 server.sendmail(login, to_addr, msg.as_string())
 
             server.quit()
-            logging.info(
+            logger.info(
                 '[send_email] Success: message from {} to {} sent'.format(
                     login,
-                    to_addr
+                    to_addr,
+                    email_id,
                 )
             )
             cur.execute(
@@ -78,7 +81,7 @@ def send_email(
             return True
 
         except Exception as ex:
-            logging.warning(fail_log.format(login, to_addr, ex))
+            logger.warning(fail_log.format(login, to_addr, ex, email_id))
             exception = "EXCEPTION"
             if 'password' in repr(ex) or 'Password' in repr(ex):
                 exception = "WRONG LOGIN OR PASSWORD"
@@ -92,5 +95,5 @@ def send_email(
             )
     conn.commit()
     conn.close()
-    logging.warning(fail_log2.format(login, to_addr))
+    logger.warning(fail_log2.format(login, to_addr, email_id))
     return False

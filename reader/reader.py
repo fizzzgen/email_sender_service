@@ -6,9 +6,11 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
+logger = logging.getLogger(__name__)
+
 
 def _parse_google_table(spreadsheetId, spreadsheetRange):
-    logging.info('[reader] Parsing spreadsheet {}'.format(spreadsheetId))
+    logger.info('[reader] Parsing spreadsheet {}'.format(spreadsheetId))
     creds = None
     if os.path.exists('reader/token.pickle'):
         with open('reader/token.pickle', 'rb') as token:
@@ -46,7 +48,7 @@ def _parse_google_table(spreadsheetId, spreadsheetRange):
             continue
         validated_values.append(row)
 
-    logging.info(
+    logger.info(
         '[reader] Finished parsing spreadsheet {}'.format(spreadsheetId)
     )
     return validated_values
