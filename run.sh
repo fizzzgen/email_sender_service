@@ -1,1 +1,1 @@
-python web_server.py | python poll.py
+python web_server.py | python3 poll.py
