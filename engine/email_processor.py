@@ -2,6 +2,8 @@ import sqlite3
 import time
 import threading
 import socket
+import logging
+
 from sender import sender
 from reader import reader
 
@@ -52,7 +54,9 @@ def poll():
         current_time = int(time.time())
         _cursor.execute('SELECT id,token,to_addr,html_text,subject,unsubscribe_link,image_file,login,password,server,ts FROM queue WHERE ts<{} and status="IN PROGRESS"'.format(current_time))  # noqa
         emails = _cursor.fetchall()
-        print('[poll] Emails to send: {}'.format(len(emails)))
+        if emails:
+            logging.info('[poll] Emails to send: {}'.format(len(emails)))
+            logging.debug('[poll] ids to send: {}'.format([e['id'] for e in emails]))
         threads = []
         for email in emails:
             tr = threading.Thread(
@@ -95,12 +99,7 @@ def schedule(
     )
     current_time = int(time.time())
     for item in data:
-        cursor.execute(
-            '''
-                INSERT INTO queue(login, password, server, to_addr, html_text, subject, unsubscribe_link, ts, token, status)
-                VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ''',  # noqa
-            [
+        row = [
                 login,
                 password,
                 server,
@@ -111,8 +110,15 @@ def schedule(
                 current_time,
                 token,
                 'IN PROGRESS'
-            ]
+        ]
+        cursor.execute(
+            '''
+                INSERT INTO queue(login, password, server, to_addr, html_text, subject, unsubscribe_link, ts, token, status)
+                VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''',  # noqa
+            row
         )
+        logging.debug("[schedule] inserted row {}".format(row))
         current_time += delay
     connection.commit()
 
