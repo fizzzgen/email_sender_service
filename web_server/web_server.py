@@ -6,6 +6,8 @@ from flask import render_template
 import sqlite3
 import logging
 
+logger = logging.getLogger(__name__)
+
 
 app = Flask(__name__, template_folder="static")
 
@@ -34,7 +36,7 @@ def schedule():
                 spreadsheet_link
             )
         except Exception as ex:
-            logging.exception(ex)
+            logger.exception(ex)
             return render_template('form.html', status='EXCEPTION')
         return render_template('form.html', status='SUCCESS')
 
@@ -63,7 +65,7 @@ def progress():
             ]
 
         except Exception as ex:
-            logging.exception(ex)
+            logger.exception(ex)
             return render_template('progress.html', status=repr(ex))
         return render_template('progress.html', progress=data)
     if request.method == 'GET':
@@ -71,4 +73,5 @@ def progress():
 
 
 def run():
+    app.run(host='0.0.0.0', port=80)
     app.run(host='0.0.0.0', port=80)

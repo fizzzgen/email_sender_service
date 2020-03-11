@@ -7,10 +7,10 @@ import logging
 from sender import sender
 from reader import reader
 
+logger = logging.getLogger(__name__)
 
 socket.setdefaulttimeout(2)
 DB_PATH = 'db.sqlite'
-
 
 _connection = sqlite3.connect(DB_PATH)
 
@@ -55,8 +55,8 @@ def poll():
         _cursor.execute('SELECT id,token,to_addr,html_text,subject,unsubscribe_link,image_file,login,password,server,ts FROM queue WHERE ts<{} and status="IN PROGRESS"'.format(current_time))  # noqa
         emails = _cursor.fetchall()
         if emails:
-            logging.info('[poll] Emails to send: {}'.format(len(emails)))
-            logging.debug('[poll] ids to send: {}'.format([e['id'] for e in emails]))
+            logger.info('[poll] Emails to send: {}'.format(len(emails)))
+            logger.debug('[poll] ids to send: {}'.format([e['id'] for e in emails]))
         threads = []
         for email in emails:
             tr = threading.Thread(
@@ -118,7 +118,7 @@ def schedule(
             ''',  # noqa
             row
         )
-        logging.debug("[schedule] inserted row {}".format(row))
+        logger.debug("[schedule] inserted row {}".format(row))
         current_time += delay
     connection.commit()
 
