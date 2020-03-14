@@ -30,7 +30,7 @@ except Exception as e:
     pass
 
 try:
-    cursor.execute('CREATE TABLE users(token TEXT, valid_ts INTEGER)')
+    cursor.execute('CREATE TABLE token(token TEXT, type TEXT, value INTEGER)')
 except Exception as e:
     logging.warning(e)
     pass
