@@ -95,7 +95,6 @@ def send_email(
             )
             conn.commit()
             conn.close()
-    conn.commit()
-    conn.close()
+
     logger.warning(fail_log2.format(login, to_addr, email_id))
     return False
